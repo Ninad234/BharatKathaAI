@@ -143,3 +143,8 @@ def update_session(session_id:str,payload:SessionUpdate,db: Session = Depends(db
     session.title = payload.title
     db.commit()
     return {"status":"updated","title":session.title}
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app",host='127.0.0.1',port=8000,reload=True)
