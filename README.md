@@ -96,7 +96,7 @@ You need **two terminals** running simultaneously:
 
 ```bash
 cd Backend
-python -m uvicorn main:app --reload --port 8000
+python main.py
 ```
 
 The API will be available at: `http://127.0.0.1:8000`
