@@ -1,27 +1,30 @@
 # BharatKathaAI
 
-A Python-based AI chatbot specialized in Indian culture and heritage. This interactive chatbot uses the Groq API with the Llama3-70b-8192 model to answer questions exclusively about Indian culture, traditions, history, and heritage.
+A full-stack AI chatbot specialized in Indian culture and heritage. BharatKathaAI combines a sleek React-based web interface with a FastAPI backend, powered by Groq's `llama-3.3-70b-versatile` model. It answers questions exclusively about Indian culture, traditions, history, philosophy, arts, and heritage — with responses streamed in real-time.
 
 ## 🌟 Features
 
-- 🤖 AI-powered conversational bot using Llama3-70b-8192 model
-- 🇮🇳 Specialized knowledge in Indian culture and heritage
-- 💬 Interactive command-line interface
-- 🚪 Simple exit command ("quit") to end the conversation
-- ⚡ Fast responses powered by Groq's inference engine
-- 🎯 Focused expertise on Indian traditions, festivals, history, and cultural practices
+- 🤖 AI-powered chat using Groq's `llama-3.3-70b-versatile` model
+- 🇮🇳 Specialized knowledge restricted to Indian culture and heritage
+- 🌐 Full-stack: React + Vite frontend, FastAPI backend
+- 💬 Multi-session chat with persistent conversation history (SQLite)
+- ⚡ Real-time streaming responses via Server-Sent Events (SSE)
+- ✏️ Rename and 🗑️ delete individual chat sessions
+- 🔍 Search across past sessions in the sidebar
+- 📥 Export any chat session as a Markdown file
+- 🎨 Dark glassmorphism UI with smooth Framer Motion animations
+- 🔒 API key secured on the backend via `.env`
 
 ## 📋 Table of Contents
 
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Configuration](#configuration)
-- [Usage](#usage)
+- [Running the App](#running-the-app)
 - [How It Works](#how-it-works)
-- [Example Conversations](#example-conversations)
 - [Project Structure](#project-structure)
+- [API Endpoints](#api-endpoints)
 - [Dependencies](#dependencies)
-- [API Information](#api-information)
 - [Security Best Practices](#security-best-practices)
 - [Troubleshooting](#troubleshooting)
 - [FAQ](#faq)
@@ -32,347 +35,284 @@ A Python-based AI chatbot specialized in Indian culture and heritage. This inter
 
 ## Prerequisites
 
-- Python 3.7 or higher
-- Groq API key ([Get your API key here](https://console.groq.com/))
+- **Python 3.8+** — for the backend
+- **Node.js 18+ & npm** — for the frontend
+- **Groq API key** — [Get one here](https://console.groq.com/)
 - Stable internet connection
-- pip (Python package installer)
 
-### Checking Python Version
+### Checking Versions
 
 ```bash
 python --version
-# or
-python3 --version
+node --version
+npm --version
 ```
 
 ## Installation
 
-### Step 1: Clone or Download
+### Step 1: Clone the Repository
 
 ```bash
 git clone <your-repository-url>
 cd "Python chatbot"
 ```
 
-Or simply download and extract the project folder.
-
-### Step 2: Install Dependencies
-
-Install the required Python package:
+### Step 2: Backend Setup
 
 ```bash
+cd Backend
 pip install -r requirements.txt
 ```
 
-Or install directly:
+### Step 3: Frontend Setup
 
 ```bash
-pip install openai
-```
-
-### Step 3: Verify Installation
-
-```bash
-python -c "import openai; print('Installation successful!')"
+cd ../frontend
+npm install
 ```
 
 ## Configuration
 
-### Method 1: Direct Configuration (Quick Start)
+Create a `.env` file inside the `Backend/` directory with your Groq API key:
 
-1. Open `apibot.py` in a text editor
-2. Replace `"your_api_key"` on line 4 with your actual Groq API key:
-
-```python
-api_key ="your_actual_groq_api_key_here",
+```env
+GROQ_API_KEY=your_actual_groq_api_key_here
 ```
 
-### Method 2: Environment Variables (Recommended)
+> The backend loads this automatically via `python-dotenv`. Never commit this file to version control.
 
-For better security, use environment variables:
+### Getting Your Groq API Key
 
-1. Create a `.env` file (or set environment variable):
+1. Visit [Groq Console](https://console.groq.com/)
+2. Sign up or log in to your account
+3. Navigate to **API Keys** → **Create API Key**
+4. Copy the key (shown only once)
 
-**Windows (PowerShell):**
-```powershell
-$env:GROQ_API_KEY="your_actual_groq_api_key_here"
-```
+## Running the App
 
-**Windows (CMD):**
-```cmd
-set GROQ_API_KEY=your_actual_groq_api_key_here
-```
+You need **two terminals** running simultaneously:
 
-**Linux/Mac:**
-```bash
-export GROQ_API_KEY="your_actual_groq_api_key_here"
-```
-
-2. Modify `apibot.py` to read from environment:
-
-```python
-import os
-from openai import OpenAI
-
-client = OpenAI(
-    api_key = os.getenv("GROQ_API_KEY", "your_api_key"),
-    base_url = "https://api.groq.com/openai/v1"
-)
-```
-
-## Usage
-
-### Basic Usage
-
-1. Run the chatbot:
+### Terminal 1 — Start the Backend
 
 ```bash
-python apibot.py
+cd Backend
+python -m uvicorn main:app --reload --port 8000
 ```
 
-2. Start chatting! Ask questions about Indian culture and heritage:
+The API will be available at: `http://127.0.0.1:8000`
 
-```
-What you want to ask me? What is the significance of Diwali?
-Bot: [AI response about Diwali]
+### Terminal 2 — Start the Frontend
 
-What you want to ask me? Tell me about Indian classical dance forms
-Bot: [AI response about dance forms]
-
-What you want to ask me? What are the main festivals in India?
-Bot: [AI response about festivals]
+```bash
+cd frontend
+npm run dev
 ```
 
-3. To exit the chatbot, simply type `quit`:
+The app will be available at: `http://localhost:5173` (Vite default)
 
-```
-What you want to ask me? quit
-Bot: GoodBye Sweetheart
-```
-
-### Example Questions You Can Ask
-
-- "What is the history of yoga?"
-- "Tell me about the Taj Mahal"
-- "What are the major Indian classical dance forms?"
-- "Explain the significance of Holi festival"
-- "What is the meaning behind different Indian festivals?"
-- "Tell me about Indian traditional clothing"
-- "What are the major religions in India?"
+Open your browser and navigate to `http://localhost:5173` to start chatting.
 
 ## How It Works
 
-1. The bot initializes a connection to the Groq API using the OpenAI-compatible client
-2. A continuous loop waits for user input
-3. Each question is sent to the Llama3-70b-8192 model with a system prompt that restricts responses to Indian culture and heritage
-4. The model processes the query and generates a contextual response
-5. The response is displayed to the user
-6. The loop continues until the user types "quit"
+1. On load, the React frontend fetches all existing chat sessions from `GET /api/sessions`
+2. When a user sends a message, the frontend calls `POST /api/session/{id}/stream`
+3. The backend saves the user message to SQLite, builds the full message history, and calls the Groq API with streaming enabled
+4. Streamed response chunks arrive as Server-Sent Events (`text/event-stream`) and are rendered token-by-token in the UI
+5. Once streaming is complete, the final assistant reply is persisted to SQLite
+6. The session title is auto-generated from the first message (first 25 characters)
 
 ### System Prompt
 
-The chatbot uses a specialized system prompt:
+The backend enforces this system prompt for every request:
 
 ```
-"You are an excellent indian culture and heritage bot who has all the knowledge about indian culture and heritage only and you are not going to consider anyother information"
-```
-
-This ensures the bot focuses exclusively on Indian cultural topics.
-
-## Example Conversations
-
-### Example 1: Festival Information
-
-```
-What you want to ask me? What is Diwali and why is it celebrated?
-Bot: Diwali, also known as Deepavali, is one of the most important festivals in India...
-[Detailed explanation about Diwali]
-```
-
-### Example 2: Cultural Practices
-
-```
-What you want to ask me? What is the significance of namaste in Indian culture?
-Bot: Namaste is a traditional Indian greeting that holds deep cultural and spiritual significance...
-[Detailed explanation about namaste]
-```
-
-### Example 3: Historical Monuments
-
-```
-What you want to ask me? Tell me about the cultural importance of the Taj Mahal
-Bot: The Taj Mahal, located in Agra, is not just an architectural wonder but also a symbol of...
-[Detailed explanation about Taj Mahal]
+"You are an excellent Indian culture and heritage bot who has all the knowledge
+about Indian culture and heritage only. You will not answer any questions outside
+of Indian heritage, philosophy, history, geography, arts, and traditions.
+Format responses using beautiful Markdown."
 ```
 
 ## Project Structure
 
 ```
 Python chatbot/
-├── apibot.py          # Main chatbot application
-├── requirements.txt   # Python dependencies
-├── README.md          # Project documentation
-└── .gitignore         # Git ignore file (recommended)
+├── Backend/                    # FastAPI backend
+│   ├── main.py                 # API routes, SSE streaming, Groq integration
+│   ├── database.py             # SQLAlchemy models (ChatSession, ChatMessage) & SQLite engine
+│   ├── bharatkatha.db          # Auto-created SQLite database
+│   ├── requirements.txt        # Backend Python dependencies
+│   └── .env                    # Environment variables (GROQ_API_KEY) — not committed
+├── frontend/                   # React + Vite frontend
+│   ├── src/
+│   │   ├── App.jsx             # Main chat UI (sidebar, message thread, input, SSE reader)
+│   │   ├── App.css             # Component-level styles
+│   │   ├── main.jsx            # React 19 entry point
+│   │   └── index.css           # Global styles & Tailwind v4 imports
+│   ├── public/
+│   │   ├── favicon.svg         # App favicon
+│   │   └── icons.svg           # Icon assets
+│   ├── index.html              # HTML entry point
+│   ├── package.json            # Node dependencies & scripts
+│   ├── vite.config.js          # Vite + @tailwindcss/vite + @vitejs/plugin-react
+│   ├── eslint.config.js        # ESLint flat config
+│   └── .gitignore              # Frontend-specific git ignore
+├── apibot.py                   # Legacy CLI chatbot (original version)
+├── requirements.txt            # Root-level Python dependencies
+├── README.md                   # Project documentation
+└── .gitignore                  # Root git ignore
+```
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/sessions` | Fetch all chat sessions ordered by newest first |
+| `POST` | `/api/sessions` | Create a new chat session `{ id, title }` |
+| `DELETE` | `/api/session/{session_id}` | Delete a session and all its messages (cascade) |
+| `POST` | `/api/session/{session_id}/stream` | Send a message; streams AI response as SSE |
+| `PUT` | `/api/session/{session_id}` | Rename a session `{ title }` |
+
+### SSE Streaming Format
+
+Each chunk arrives as:
+```
+data:{"chunk": "...token..."}
 ```
 
 ## Dependencies
 
-- **openai** (>=1.0.0) - OpenAI-compatible Python client for API interactions with Groq
+### Backend (Python)
 
-### Dependency Details
+| Package | Purpose |
+|---------|---------|
+| `fastapi` | Web framework for building the REST API |
+| `uvicorn` | ASGI server to run FastAPI |
+| `sqlalchemy` | ORM — manages `ChatSession` and `ChatMessage` tables in SQLite |
+| `python-dotenv` | Loads `GROQ_API_KEY` from `.env` |
+| `openai` ≥ 1.0.0 | OpenAI-compatible client for the Groq API |
+| `pydantic` | Request/response data validation |
 
-The `openai` package provides:
-- Client interface for API communication
-- Chat completion functionality
-- Error handling and retry logic
+### Frontend (Node.js)
 
-## API Information
-
-- **API Provider**: Groq
-- **API Documentation**: [Groq API Docs](https://console.groq.com/docs)
-- **Model**: llama3-70b-8192
-- **Base URL**: https://api.groq.com/openai/v1
-- **Rate Limits**: Check Groq's current rate limits on their dashboard
-
-### Getting Your API Key
-
-1. Visit [Groq Console](https://console.groq.com/)
-2. Sign up or log in to your account
-3. Navigate to API Keys section
-4. Create a new API key
-5. Copy the key (it will only be shown once)
+| Package | Version | Purpose |
+|---------|---------|---------|
+| `react` | ^19.2.6 | UI library |
+| `react-dom` | ^19.2.6 | React DOM renderer |
+| `framer-motion` | ^12.40.0 | Animations and motion transitions |
+| `lucide-react` | ^1.17.0 | Icon library |
+| `tailwindcss` | ^4.3.0 | Utility-first CSS framework (v4) |
+| `@tailwindcss/vite` | ^4.3.0 | Tailwind v4 Vite plugin |
+| `vite` | ^8.0.12 | Frontend build tool and dev server |
+| `@vitejs/plugin-react` | ^6.0.1 | React Fast Refresh support |
 
 ## Security Best Practices
 
-### ⚠️ Important Security Notes
+### ⚠️ Important Notes
 
-1. **Never commit API keys to version control**
-   - Add `apibot.py` to `.gitignore` if it contains your key
-   - Use environment variables instead
-   - Consider using `.env` files (add `.env` to `.gitignore`)
+1. **Never commit your API key** — keep it in `Backend/.env` which is listed in `.gitignore`
+2. **Never put the API key in frontend code** — all Groq calls are made server-side only
+3. **Rotate your key** if it is accidentally exposed; monitor usage in the Groq dashboard
 
-2. **Keep your API key secure**
-   - Don't share your API key publicly
-   - Rotate your key if it's accidentally exposed
-   - Monitor API usage in Groq dashboard
-
-3. **Recommended .gitignore entries**:
+### Recommended `.gitignore` Entries
 
 ```
-# API Keys
-apibot.py
+# Environment variables
 .env
 *.env
 
 # Python
 __pycache__/
 *.py[cod]
-*$py.class
 *.so
-.Python
 venv/
 env/
 ENV/
+
+# SQLite database
+*.db
+
+# Node
+node_modules/
+dist/
 ```
 
 ## Troubleshooting
 
-### Common Issues and Solutions
+### `ModuleNotFoundError` for a Python package
 
-#### Issue: `ModuleNotFoundError: No module named 'openai'`
-
-**Solution:**
 ```bash
-pip install openai
-# or
-pip3 install openai
+pip install -r Backend/requirements.txt
 ```
 
-#### Issue: API Authentication Error
+### Frontend shows network error / messages don't send
 
-**Symptoms:** Error messages about invalid API key or authentication
+- Ensure the backend is running on port `8000`
+- Check the browser console for CORS errors
+- CORS is configured as `allow_origins=["*"]` in `main.py` by default
 
-**Solutions:**
-- Verify your API key is correct in `apibot.py`
-- Check if your API key is active in Groq console
-- Ensure there are no extra spaces or quotes around the API key
-- Try regenerating your API key
+### `401 Unauthorized` from Groq API
 
-#### Issue: Connection Timeout
+- Verify `GROQ_API_KEY` is correct in `Backend/.env`
+- Ensure there are no extra spaces or quotes around the key
+- Try regenerating the API key in the [Groq Console](https://console.groq.com/)
 
-**Symptoms:** Script hangs or shows connection errors
+### Model not found error
 
-**Solutions:**
-- Check your internet connection
-- Verify Groq API status
-- Check firewall settings
-- Try again after a few moments (could be temporary API issue)
+- The backend uses `llama-3.3-70b-versatile` — verify this is available in your Groq account
+- Check [Groq's model list](https://console.groq.com/docs/models) for currently available models
 
-#### Issue: Rate Limit Exceeded
+### Frontend dev server not starting
 
-**Symptoms:** Error messages about rate limits
-
-**Solutions:**
-- Wait a few moments before trying again
-- Check your API usage limits in Groq dashboard
-- Consider upgrading your Groq plan if needed
-
-#### Issue: Model Not Found Error
-
-**Symptoms:** Error about model "llama3-70b-8192" not found
-
-**Solutions:**
-- Verify the model name is correct
-- Check Groq's available models
-- Update to the latest model name if changed
+```bash
+cd frontend
+npm install   # reinstall dependencies
+npm run dev
+```
 
 ### Getting Help
 
-If you encounter other issues:
 1. Check the [Groq API Documentation](https://console.groq.com/docs)
-2. Review error messages carefully
-3. Ensure all dependencies are installed correctly
-4. Verify your Python version is compatible (3.7+)
+2. Review error messages in both terminals
+3. Ensure Python ≥ 3.8 and Node.js ≥ 18 are installed
 
 ## FAQ
 
-### Q: Can I use this bot for topics other than Indian culture?
+### Q: Can I ask about topics other than Indian culture?
 
-**A:** The bot is specifically configured to respond only to questions about Indian culture and heritage. The system prompt restricts it to this domain. You can modify the system prompt in `apibot.py` if you want to change its focus.
+**A:** No — the system prompt strictly restricts the bot to Indian culture, heritage, history, philosophy, arts, and traditions. Questions outside this domain are declined.
 
 ### Q: Is the Groq API free?
 
-**A:** Groq offers free tier usage with certain limits. Check their [pricing page](https://console.groq.com/) for current rates and limits.
+**A:** Groq offers a free tier with usage limits. Check their [pricing page](https://console.groq.com/) for current rates and limits.
 
-### Q: Can I customize the bot's responses?
+### Q: Are my conversations saved?
 
-**A:** Yes! You can modify the system prompt in `apibot.py` (line 18) to change the bot's personality, expertise area, or response style.
+**A:** Yes — all chat sessions and messages are persisted in a local SQLite database (`Backend/bharatkatha.db`). They are restored on every page reload.
 
-### Q: How do I save conversation history?
+### Q: How do I export a conversation?
 
-**A:** Currently, the bot doesn't save conversation history. You could enhance it by adding file logging or database storage.
+**A:** Click the **Export MD** button in the top-right of the chat panel. It downloads the active session as a `.md` Markdown file.
 
-### Q: Can I use a different AI model?
+### Q: Can I rename or delete a session?
 
-**A:** Yes, you can change the model name on line 14 of `apibot.py`. Check Groq's documentation for available models.
+**A:** Yes — hover over any session in the sidebar to reveal **✏️ rename** and **🗑️ delete** action buttons.
 
-### Q: Is my data stored by Groq?
+### Q: Can I change the AI model?
 
-**A:** Review Groq's privacy policy and terms of service for information about data handling. Generally, API providers may log requests for service improvement and abuse prevention.
+**A:** Yes — edit the `model` field inside the `event_generator` function in `Backend/main.py`. Check [Groq's docs](https://console.groq.com/docs/models) for available models.
 
-### Q: What Python version do I need?
+### Q: What Python version is required?
 
-**A:** Python 3.7 or higher is required. Python 3.8+ is recommended for best compatibility.
+**A:** Python 3.8 or higher. Python 3.10+ is recommended for best compatibility.
 
 ## Limitations
 
-- **Single-turn conversations**: The bot doesn't maintain context between multiple questions in a conversation
-- **Internet required**: The bot needs an active internet connection to access the Groq API
-- **API dependency**: Service availability depends on Groq's API status
-- **Rate limits**: Subject to Groq's API rate limiting policies
-- **Focused domain**: Only responds to questions about Indian culture and heritage by design
-- **No conversation history**: Each query is independent; previous context is not retained
-- **Command-line only**: Currently operates in terminal/command prompt only
+- **Focused domain only** — restricted to Indian culture and heritage by design
+- **Local SQLite database** — not suitable for multi-user cloud deployments without switching to PostgreSQL or similar
+- **No authentication** — the app does not include user login or access control
+- **Internet required** — the Groq API requires an active internet connection
+- **API rate limits** — subject to Groq's rate limiting policies on the free tier
+- **Single-user local setup** — designed for local development; production deployment requires additional configuration
 
 ## Contributing
 
@@ -390,45 +330,37 @@ Contributions are welcome! Here are some ways you can help:
 
 ### Areas for Contribution
 
-- Adding conversation history/memory
-- Implementing a GUI interface
-- Adding support for multiple languages
-- Enhancing error handling
-- Adding conversation export features
-- Creating unit tests
-- Improving documentation
-- Adding support for different AI models
+- User authentication and profiles
+- Cloud database support (PostgreSQL / Neon)
+- Support for multiple Indian languages (Hindi, Tamil, etc.)
+- Voice input/output support
+- Mobile responsive PWA
+- Unit and integration tests
+- Multimodal support (image-based questions)
 
 ### Code Style
 
-- Follow PEP 8 Python style guide
-- Add comments for complex logic
-- Keep functions focused and modular
-- Include docstrings for functions
+- **Python**: Follow PEP 8; use docstrings for functions
+- **JavaScript/React**: Follow standard React patterns; use functional components and hooks
 
 ## Future Improvements
 
 ### Planned Features
 
-- [ ] Conversation history/memory system
-- [ ] GUI interface (using Tkinter or web-based)
-- [ ] Support for multiple languages
-- [ ] Conversation export (text/JSON)
-- [ ] Better error handling and retry logic
-- [ ] Configurable system prompts
-- [ ] Support for different AI models
-- [ ] Streaming responses for real-time output
-- [ ] Multi-turn conversation context
-- [ ] Configuration file support
-
-### Enhancement Ideas
-
-- Add a web interface using Flask/FastAPI
-- Implement conversation saving and loading
-- Add support for voice input/output
-- Create a mobile app version
-- Add support for image-based questions
-- Implement user profiles and preferences
+- [x] Persistent conversation history (SQLite via SQLAlchemy)
+- [x] Streaming responses (Server-Sent Events)
+- [x] Multi-session management (create, rename, delete)
+- [x] Search across chat sessions
+- [x] Export chat as Markdown
+- [x] Web UI (React 19 + Vite + Tailwind v4)
+- [ ] User authentication and access control
+- [ ] Cloud database support (PostgreSQL / Neon)
+- [ ] Configurable system prompts via UI
+- [ ] Multi-language support (Hindi, Tamil, etc.)
+- [ ] Voice input/output
+- [ ] Deploy backend to Railway / Render
+- [ ] Deploy frontend to Vercel / Netlify
+- [ ] Mobile-first responsive layout improvements
 
 ## License
 
@@ -439,8 +371,11 @@ This project is open source and available for personal and educational use.
 ## Acknowledgments
 
 - Built with [Groq](https://groq.com/) API
-- Powered by Llama3-70b-8192 model
-- Uses [OpenAI Python Library](https://github.com/openai/openai-python)
+- Powered by `llama-3.3-70b-versatile` model
+- Uses [OpenAI Python Library](https://github.com/openai/openai-python) (OpenAI-compatible client for Groq)
+- Frontend built with [React 19](https://react.dev/), [Vite 8](https://vite.dev/), [Tailwind CSS v4](https://tailwindcss.com/), and [Framer Motion](https://www.framer.com/motion/)
+- Icons by [Lucide](https://lucide.dev/)
+- Backend powered by [FastAPI](https://fastapi.tiangolo.com/) and [SQLAlchemy](https://www.sqlalchemy.org/)
 
 ---
 
