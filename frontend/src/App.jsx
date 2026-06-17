@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 
 export default function App() {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [chats, setChats] = useState([]);
   const [activeChatId, setActiveChatId] = useState('');
   const [inputText, setInputText] = useState('');
@@ -20,7 +21,7 @@ export default function App() {
   useEffect(() => {
     const fetchSessions = async () => {
       try {
-        const res = await fetch('http://127.0.0.1:8000/api/sessions');
+        const res = await fetch(`${API_URL}/api/sessions`);
         const data = await res.json();
         if (data.length > 0) {
           setChats(data);
@@ -60,7 +61,7 @@ export default function App() {
   const deleteChat = async (id, e) => {
     e.stopPropagation();
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/session/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${API_URL}/api/session/${id}`, { method: 'DELETE' });
       if (!res.ok) {
         console.error('Failed to delete session on server', await res.text());
         return;
@@ -93,7 +94,7 @@ export default function App() {
   setEditingChatId('');
 
    try {
-      const res = await fetch(`http://127.0.0.1:8000/api/session/${id}`,{
+      const res = await fetch(`${API_URL}/api/session/${id}`,{
         method:'PUT',
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({title:editTitleInput})
@@ -118,7 +119,7 @@ export default function App() {
     // Sync session creation if empty
     if (activeChat.messages.length === 0) {
       try {
-        await fetch('http://127.0.0.1:8000/api/sessions', {
+        await fetch(`${API_URL}/api/sessions`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id: activeChatId, title: userPrompt.substring(0, 20) })
@@ -152,7 +153,7 @@ export default function App() {
     }));
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/session/${activeChatId}/stream`, {
+      const response = await fetch(`${API_URL}/api/session/${activeChatId}/stream`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: userPrompt })
