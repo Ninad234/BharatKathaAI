@@ -2,12 +2,22 @@
 from sqlalchemy import create_engine,Column,Text,String,ForeignKey,DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker,relationship,Session
+import os
 
 import datetime
 
-DATABASE_URL = "sqlite:///./bharatkatha.db"
-engine = create_engine(DATABASE_URL,connect_args={"check_same_thread":False})
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL environment variable is not set")
+
+if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+    
+engine = create_engine(DATABASE_URL,pool_size=5,max_overflow=10,pool_timeout=30,pool_pre_ping=True)
+
 SessionLocal = sessionmaker(autoflush=False,autocommit=False,bind=engine)
+
 Base = declarative_base()
 
 # ChatSession is the parent container for messages
