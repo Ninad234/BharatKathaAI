@@ -13,15 +13,15 @@ import database as db_mod
 
 app = FastAPI(title="BharatKatha AI")
 
+load_dotenv()
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://bharat-katha-ai.vercel.app/","http://localhost:5173"],
+    allow_origins=["https://bharat-katha-ai.vercel.app/"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
 )
-
-load_dotenv()
 
 client = OpenAI(
     api_key=os.getenv("GROQ_API_KEY"),
