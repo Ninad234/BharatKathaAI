@@ -111,7 +111,7 @@ async def stream_chat(session_id:str,payload:MessageSend,db: Session = Depends(d
     async def event_generator():
         try:
             stream = client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
+                model="openai/gpt-oss-120b",
                 messages=api_messages,
                 stream=True
             )
