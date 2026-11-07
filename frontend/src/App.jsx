@@ -4,6 +4,9 @@ import {
   Plus, MessageSquare, Settings, Search, Send, Trash2,Edit2,
   Menu, X, Sparkles, Compass, User, RefreshCw, ChevronRight, Download
 } from 'lucide-react';
+import ReactMarkDown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
 export default function App() {
   const API_URL = import.meta.env.VITE_API_URL;
@@ -204,14 +207,21 @@ export default function App() {
     if (!activeChat.messages.length) return;
     let md = `# BharatKatha AI Session: ${activeChat.title}\n\n`;
     activeChat.messages.forEach(m => {
-      md += `### ${m.role === 'user' ? 'User' : 'BharatKatha AI'}\n${m.content}\n\n`;
+      const cleanContent =
+      m.role === 'user'
+      ? m.content
+      : m.content
+      ?.replace(/(<br\s*\/?>|\n)\s*-\s+/gi, '<br />')
+      .replace(/\|\s*-\s+/g, '| ')
+      md += `### ${m.role === 'user' ? 'User' : 'BharatKatha AI'}\n${cleanContent}\n\n`;
     });
-    const blob = new Blob([md], { type: 'text/markdown' });
+    const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = `${activeChat.title.replace(/\s+/g, '_')}.md`;
     a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -441,9 +451,32 @@ export default function App() {
                       <div className={`p-4 rounded-2xl text-sm leading-relaxed border ${
                         isUser ? 'bg-amber-500/5 border-amber-500/10 text-neutral-200' : 'bg-white/5 border-white/10 text-neutral-200'
                       }`}>
-                        <p className="whitespace-pre-line">{msg.content}</p>
+                        {/* <p className="whitespace-pre-line"><ReactMarkDown>{msg.content}</ReactMarkDown></p> */}
+                        {isUser ? (
+    <p className="whitespace-pre-line">{msg.content}</p>
+  ) : (
+    <div className="prose prose-invert prose-amber max-w-none text-neutral-200 leading-loose
+      prose-p:my-3 
+      prose-headings:text-amber-400 
+      prose-th:border-white/10 prose-td:border-white/10
+      prose-th:bg-white/5  prose-code:text-amber-300
+      [&_td]:border-b border-white/15 py-4 px-3 align-top"
+      >
+      <ReactMarkDown 
+        remarkPlugins={[remarkGfm]} 
+        rehypePlugins={[rehypeRaw]}
+        components={{
+          br:()=> <span className='block'/>
+        }}
+      >
+       {msg.content
+        ?.replace(/(<br\s*\/?>|\n)\s*-\s+/gi, "<br />")
+        .replace(/\|\s*-\s+/g, "| ")}
+      </ReactMarkDown>
+    </div>
+  )}
                       </div>
-                    </div>
+                    </div>  
                   </motion.div>
                 );
               })}
