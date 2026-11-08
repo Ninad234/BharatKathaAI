@@ -1,10 +1,10 @@
 # BharatKathaAI
 
-A full-stack AI chatbot specialized in Indian culture and heritage. BharatKathaAI combines a sleek React-based web interface with a FastAPI backend, powered by Groq's `llama-3.3-70b-versatile` model. It answers questions exclusively about Indian culture, traditions, history, philosophy, arts, and heritage — with responses streamed in real-time.
+A full-stack AI chatbot specialized in Indian culture and heritage. BharatKathaAI combines a sleek React-based web interface with a FastAPI backend, powered by Groq's `openai/gpt-oss-120b` model. It answers questions exclusively about Indian culture, traditions, history, philosophy, arts, and heritage — with responses streamed in real-time.
 
 ## 🌟 Features
 
-- 🤖 AI-powered chat using Groq's `llama-3.3-70b-versatile` model
+- 🤖 AI-powered chat using Groq's `openai/gpt-oss-120b` model
 - 🇮🇳 Specialized knowledge restricted to Indian culture and heritage
 - 🌐 Full-stack: React + Vite frontend, FastAPI backend
 - 💬 Multi-session chat with persistent conversation history (SQLite)
