@@ -37,8 +37,13 @@ class MessageSend(BaseModel):
 
 class SessionUpdate(BaseModel):
     title:str
-
-
+    
+# Added a health check endpoint to verify database connection.
+@app.get("/health")
+def health_check(db: Session = Depends(get_db)):
+    # Executes a minimal query so Supabase counts this as active database usage
+    db.execute(text("SELECT 1"))
+    return {"status": "ok", "database": "connected"}
 
 # 1. Fetch all chat sessions
 @app.get("/api/sessions")
